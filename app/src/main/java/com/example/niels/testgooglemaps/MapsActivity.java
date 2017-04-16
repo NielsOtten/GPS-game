@@ -97,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.UiSettings.setZoomControlsEnabled(false);
 
         // Zoom camera to Wijnhaven
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.9173482, 4.482605), 16.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.06109, 4.818502), 16.0f));
     }
 
     @Override
