@@ -1,14 +1,7 @@
 package com.example.niels.testgooglemaps;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,7 +10,6 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
@@ -61,7 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLoadedCallback(this);
 
         // Zoom camera to Wijnhaven
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.06109, 4.818502), 16.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.9174221, 4.4826467), 16.0f));
 
         this.Player = new Player(this, mMap);
     }

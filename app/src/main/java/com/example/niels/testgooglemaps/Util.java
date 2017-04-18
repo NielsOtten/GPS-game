@@ -5,10 +5,6 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 
-/**
- * Created by niels on 18/04/2017.
- */
-
 public class Util {
     // Constant for location permission
     private static final int PERMISSION_LOCATION_CODE = 34;
