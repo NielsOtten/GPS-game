@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -16,6 +17,8 @@ public class Player {
     private GoogleMap mMap;
     private Activity mainActivity;
     private LocationManager mLocationManager;
+    private Marker marker;
+    private int yaw;
 
     public Player(Activity mainActivity, GoogleMap mMap) {
         // Construct singleton.
@@ -37,8 +40,8 @@ public class Player {
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            //your code here
             changeLocation(location);
+
         }
 
         @Override
@@ -65,7 +68,16 @@ public class Player {
     }
 
     private void changeLocation(Location location) {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("test"));
+        if (this.marker == null) {
+            this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("User"));
+        }
+
+        this.marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+
         GameSocket.getInstance().emit("changeLocation", location.getLatitude(), location.getLongitude(), location.getAccuracy());
+    }
+
+    public void setYaw(int yaw) {
+        this.yaw = yaw;
     }
 }
