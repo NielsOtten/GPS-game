@@ -22,42 +22,12 @@ import com.google.android.gms.maps.model.VisibleRegion;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 
-    // Constant for location permission
-    public static final int PERMISSION_LOCATION_CODE = 34;
-
     private GoogleMap mMap;
+    private Player Player;
     private UiSettings UiSettings;
-    private LocationManager mLocationManager;
     private Projection mProjection;
     private LatLng leftUpperCorner;
     private LatLng rightBottomCorner;
-    
-
-    /*
-     * http://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
-     */
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            //your code here
-            changeLocation(location);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,19 +37,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        // Check for permissions and request permissions;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSION_LOCATION_CODE);
-            return;
-        }
-
-        setupLocationManager();
-
-        GameSocket.getInstance().emit("ik besta", "test");
     }
 
     /**
@@ -105,38 +62,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Zoom camera to Wijnhaven
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.06109, 4.818502), 16.0f));
+
+        this.Player = new Player(this, mMap);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_LOCATION_CODE:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    pushToast("Permission granted");
-                } else {
-                    pushToast("Permission denied :(");
-                }
-                break;
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//                                           String permissions[], int[] grantResults) {
+//        switch (requestCode) {
+//            case PERMISSION_LOCATION_CODE:
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    pushToast("Permission granted");
+//                } else {
+//                    pushToast("Permission denied :(");
+//                }
+//                break;
+//        }
+//    }
 
-    public void setupLocationManager() {
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1,
-                2, mLocationListener);
-    }
-
-    public void changeLocation(Location location) {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("test"));
-        GameSocket.getInstance().emit("changeLocation", location.getLatitude(), location.getLongitude(), location.getAccuracy());
-    }
-
-    public void pushToast(String text) {
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-    }
+//    public void pushToast(String text) {
+//        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+//    }
 
     @Override
     public void onMapLoaded() {
