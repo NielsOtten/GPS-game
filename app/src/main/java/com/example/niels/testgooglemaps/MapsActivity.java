@@ -13,12 +13,14 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 
     // Constant for location permission
     public static final int PERMISSION_LOCATION_CODE = 34;
@@ -26,6 +28,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private UiSettings UiSettings;
     private LocationManager mLocationManager;
+    private Projection mProjection;
+    private LatLng leftUpperCorner;
+    private LatLng rightBottomCorner;
     
 
     /*
@@ -96,6 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.UiSettings.setCompassEnabled(false);
         this.UiSettings.setZoomControlsEnabled(false);
 
+        mMap.setOnMapLoadedCallback(this);
+
         // Zoom camera to Wijnhaven
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.06109, 4.818502), 16.0f));
     }
@@ -129,5 +136,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void pushToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMapLoaded() {
+        this.mProjection = mMap.getProjection();
+        VisibleRegion region = mProjection.getVisibleRegion();
+        this.leftUpperCorner = region.farLeft;
+        this.rightBottomCorner = region.nearRight;
     }
 }
