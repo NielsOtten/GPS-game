@@ -6,6 +6,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import com.example.niels.testgooglemaps.Weapons.IWeapon;
+import com.example.niels.testgooglemaps.Weapons.Sniper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,6 +23,12 @@ public class Player {
     private Marker marker;
     private int yaw;
 
+    public void setYaw(int yaw) {
+        this.yaw = yaw;
+    }
+
+    private IWeapon Weapon;
+
     public Player(Activity mainActivity, GoogleMap mMap) {
         // Construct singleton.
         GameSocket.getInstance();
@@ -33,6 +41,8 @@ public class Player {
         this.mainActivity = mainActivity;
 
         setupLocationManager();
+
+        this.Weapon = new Sniper();
     }
 
     /*
@@ -79,7 +89,7 @@ public class Player {
         GameSocket.getInstance().emit("changeLocation", location.getLatitude(), location.getLongitude(), location.getAccuracy());
     }
 
-    public void setYaw(int yaw) {
-        this.yaw = yaw;
+    public String getWeapon() {
+        return Weapon.getType();
     }
 }

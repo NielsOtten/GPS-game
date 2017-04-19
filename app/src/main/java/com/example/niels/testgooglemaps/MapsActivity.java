@@ -54,7 +54,7 @@ public class MapsActivity extends FragmentActivity implements
         final Button button = (Button) findViewById(R.id.shoot_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Player shoot.
+                GameSocket.getInstance().emit("shoot", Player.getWeapon());
             }
         });
     }
