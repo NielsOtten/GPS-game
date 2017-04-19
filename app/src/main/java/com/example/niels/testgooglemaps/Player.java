@@ -21,11 +21,6 @@ public class Player {
     private Activity mainActivity;
     private LocationManager mLocationManager;
     private Marker marker;
-    private int yaw;
-
-    public void setYaw(int yaw) {
-        this.yaw = yaw;
-    }
 
     private IWeapon Weapon;
 

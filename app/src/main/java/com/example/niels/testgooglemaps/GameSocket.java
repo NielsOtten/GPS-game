@@ -12,7 +12,7 @@ class GameSocket {
 
         if(socket == null) {
             try {
-                socket = IO.socket("https://xkzpohhzcz.localtunnel.me");
+                socket = IO.socket("http://cd41be73.ngrok.io");
                 socket.connect();
             } catch (URISyntaxException e) {
                 e.printStackTrace();

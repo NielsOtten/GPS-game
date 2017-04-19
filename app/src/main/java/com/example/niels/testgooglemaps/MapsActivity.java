@@ -119,8 +119,7 @@ public class MapsActivity extends FragmentActivity implements
 
             // Degrees from north.
             int yaw = (int)(mOrientation[0]*rad2deg);
-            Player.setYaw(yaw);
-            Log.d("Yaw", Float.toString(yaw));
+            GameSocket.getInstance().emit("changeAngle", yaw);
         }
     }
 
