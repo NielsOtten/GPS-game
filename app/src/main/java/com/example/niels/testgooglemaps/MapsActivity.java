@@ -7,6 +7,7 @@ import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -123,14 +124,14 @@ public class MapsActivity extends FragmentActivity implements
 
         SensorManager.getRotationMatrix(mR, mI, mGData, mMData);
         SensorManager.getOrientation(mR, mOrientation);
-        float incl = SensorManager.getInclination(mI);
         if (mCount++ > 50) {
             final float rad2deg = (float)(180.0f/Math.PI);
             mCount = 0;
 
             // Degrees from north.
             int yaw = (int)(mOrientation[0]*rad2deg);
-            GameSocket.getInstance().emit("changeAngle", yaw);
+            Player.setYaw(yaw);
+            GameSocket.getInstance().emit("changeAngle", Player.getYaw());
         }
     }
 

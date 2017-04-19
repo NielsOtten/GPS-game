@@ -19,11 +19,17 @@
             android:layout_weight="1"
             tools:context="com.example.niels.testgooglemaps.MapsActivity" />
 
+        <TextView
+            android:id="@+id/debug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
+
         <Button
             android:id="@+id/shoot_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="59dp"
+            android:layout_weight="0.02"
             android:text="@string/shoot" />
     </LinearLayout>
-
 </FrameLayout>
