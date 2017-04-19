@@ -4,9 +4,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,6 +18,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
+
+import io.socket.emitter.Emitter;
 
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
@@ -38,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements
     private float[] mI = new float[16];
     private float[] mOrientation = new float[3];
     private int mCount;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +53,19 @@ public class MapsActivity extends FragmentActivity implements
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        this.vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         final Button button = (Button) findViewById(R.id.shoot_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 GameSocket.getInstance().emit("shoot", Player.getWeapon());
+            }
+        });
+
+        GameSocket.getInstance().on("hit", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                vibrator.vibrate(500);
             }
         });
     }

@@ -47,7 +47,6 @@ public class Player {
         @Override
         public void onLocationChanged(final Location location) {
             changeLocation(location);
-
         }
 
         @Override
