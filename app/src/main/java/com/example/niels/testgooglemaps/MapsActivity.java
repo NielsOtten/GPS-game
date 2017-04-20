@@ -1,5 +1,6 @@
 package com.example.niels.testgooglemaps;
 
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -7,7 +8,6 @@ import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -20,6 +20,12 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class MapsActivity extends FragmentActivity implements
@@ -42,6 +48,10 @@ public class MapsActivity extends FragmentActivity implements
     private float[] mOrientation = new float[3];
     private int mCount;
     private Vibrator vibrator;
+    private ArrayList<Ally> allies;
+
+    private SharedPreferences mPrefs;
+    private SharedPreferences.Editor mPrefsEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,8 @@ public class MapsActivity extends FragmentActivity implements
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         this.vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        this.mPrefs = getSharedPreferences("player", 0);
+        this.mPrefsEditor = this.mPrefs.edit();
 
         final Button button = (Button) findViewById(R.id.shoot_button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -63,12 +75,56 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
 
-        GameSocket.getInstance().on("hit", new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                vibrator.vibrate(500);
-            }
-        });
+        this.allies = new ArrayList<Ally>();
+
+        GameSocket.getInstance()
+                .on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        String playerId = mPrefs.getString("playerId", "");
+                        GameSocket.getInstance().emit("loginPlayer", playerId);
+                    }
+                })
+                .on("loggedIn", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        String playerId = args[0].toString();
+
+                        mPrefsEditor.putString("playerId", playerId);
+                        mPrefsEditor.apply();
+                    }
+                })
+                .on("hit", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        vibrator.vibrate(500);
+                    }
+                })
+                .on("changeLocation", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        JSONObject obj = (JSONObject)args[0];
+                        try {
+                            String lat = obj.getString("lat");
+                            String lng = obj.getString("long");
+                            LatLng location = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                            String playerId = obj.getString("playerId");
+                            String accuracy = obj.getString("accuracy");
+
+                            boolean found = false;
+                            for (Ally ally : allies) {
+                                if (ally.getPlayerId().equals(playerId)) {
+                                    found = true;
+                                    ally.updatePosition(location);
+                                }
+                            }
+                            if (!found) allies.add(new Ally(location, playerId, mMap));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     /**
@@ -94,6 +150,10 @@ public class MapsActivity extends FragmentActivity implements
 
         // Zoom camera to Wijnhaven
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.9174221, 4.4826467), 16.0f));
+
+        // Locatie Ivoordreef
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.118937, 5.1084433), 16.0f));
+
 
         this.Player = new Player(this, mMap);
     }
@@ -139,6 +199,7 @@ public class MapsActivity extends FragmentActivity implements
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
 
     protected void onResume() {
         super.onResume();

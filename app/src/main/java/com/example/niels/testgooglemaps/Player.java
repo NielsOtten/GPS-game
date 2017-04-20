@@ -5,11 +5,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.niels.testgooglemaps.Weapons.IWeapon;
 import com.example.niels.testgooglemaps.Weapons.Sniper;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -88,13 +88,21 @@ public class Player {
 
     private void changeLocation(Location location) {
         if (this.marker == null) {
-            this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("User"));
+            this.marker = mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.blue))
+                    .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                    .title("User"));
         }
 
         this.marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
 
         GameSocket.getInstance().emit("changeLocation", location.getLatitude(), location.getLongitude(), location.getAccuracy());
+    }
+
+    public void changeMarkerIcon() {
+        this.marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.red));
+
     }
 
     public String getWeapon() {
